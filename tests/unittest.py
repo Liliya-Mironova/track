@@ -106,6 +106,11 @@ class TestListMethods(unittest.TestCase):
             self.assertFalse(self.dll.contains(i))
             self.assertEqual(self.dll.len(), length)
 
+        for i in range(self.num_elements, self.num_elements + self.shift + 2):        
+            self.dll.push(i)
+
+        self.dll.delete(self.num_elements + self.shift + 1)
+
         # empty:
         with self.assertRaises(RuntimeError):
             self.empty_list.delete(1)

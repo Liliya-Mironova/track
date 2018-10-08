@@ -75,11 +75,13 @@ class DoubleLinkedList:
             if cursor.data == data:
                 if cursor == self.first:
                     self.first = cursor.next_item
+                elif cursor == self.last:
+                    self.last = cursor.prev_item
                 else:
                     cursor.prev_item.next_item = cursor.next_item
                     cursor.next_item.prev_item = cursor.prev_item
-                    cursor.prev_item = None
-                    cursor.next_item = None
+                cursor.prev_item = None
+                cursor.next_item = None
                 cursor.data = None
                 self.count -= 1
                 return
