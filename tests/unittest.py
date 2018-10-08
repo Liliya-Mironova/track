@@ -32,7 +32,7 @@ class TestListMethods(unittest.TestCase):
         self.empty_list.push(self.to_empty_data)
         self.assertEqual(self.empty_list.len(), 1)
         self.assertTrue(self.empty_list.contains(self.to_empty_data))
-        
+
     def test_pop(self):
         length = self.dll.len()
         for i in range(self.num_elements):
@@ -50,7 +50,6 @@ class TestListMethods(unittest.TestCase):
         elem = self.one_elem_list.pop()
         self.assertEqual(self.one_elem_list.len(), 0)
         self.assertEqual(data, elem)
-
 
     def test_shift(self):
         length = self.dll.len()
@@ -106,7 +105,7 @@ class TestListMethods(unittest.TestCase):
             self.assertFalse(self.dll.contains(i))
             self.assertEqual(self.dll.len(), length)
 
-        for i in range(self.num_elements, self.num_elements + self.shift + 2):        
+        for i in range(self.num_elements, self.num_elements + self.shift + 2):
             self.dll.push(i)
 
         self.dll.delete(self.num_elements + self.shift + 1)
@@ -131,7 +130,7 @@ class TestListMethods(unittest.TestCase):
 
     def test_get_last(self):
         for i in range(self.num_elements):
-            self.assertEqual(self.dll.get_last().data, self.num_elements - i - 1)
+            self.assertEqual(self.dll.get_last().data, self.num_elements-i-1)
             self.dll.pop()
 
         # empty - error
