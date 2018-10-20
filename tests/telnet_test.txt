@@ -1,0 +1,23 @@
+telnet www.mail.ru 80
+Trying 217.69.139.70...
+Connected to www.mail.ru.
+Escape character is '^]'.
+GET /robots.txt HTTP/1.1
+Host: www.mail.ru
+
+HTTP/1.1 200 OK
+Server: nginx/1.6.2
+Date: Mon, 15 Oct 2018 17:39:49 GMT
+Content-Type: text/plain
+Content-Length: 50
+Last-Modified: Wed, 19 Nov 2014 17:19:12 GMT
+Connection: close
+ETag: "546cd110-32"
+X-Frame-Options: SAMEORIGIN
+Accept-Ranges: bytes
+
+User-Agent: *
+Allow: /$
+Disallow: /
+Host: mail.ru
+Connection closed by foreign host.
