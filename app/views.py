@@ -4,7 +4,7 @@ from flask import request, abort, jsonify
 
 @app.route('/')
 def index(name="world"):
-	return "Hello, {}!".format(name)
+    return "Hello, {}!".format(name)
 
 # ----------------------------------------
 @app.route('/login/', methods=['GET', 'POST'])
@@ -24,7 +24,7 @@ def login():
 
 @app.route('/find_user/', methods=['GET', 'POST'])
 def find_user():
-    if request.method == "POST":
+    if request.method == "GET":
         return """<html><head></head><body>
         <form method="POST" action="/find_user/">
             <input name="full_name">
@@ -39,7 +39,7 @@ def find_user():
 
 @app.route('/find_chat/', methods=['GET', 'POST'])
 def find_chat():
-    if request.method == "POST":
+    if request.method == "GET":
         return """<html><head></head><body>
         <form method="POST" action="/find_chat/">
             <input name="chat_name">
@@ -53,45 +53,41 @@ def find_chat():
         return resp
 
 @app.route('/get_chats_list/', methods=['GET'])
-def get_chats_list():
-    data = {
-        'name': 'Liliya',
-        'nickname': 'LL',
-        'participant': 5
-    }
+def get_chats_list_of_user():
+    data = {'name': 'Liliya', 'nickname': 'LL','chat_num': 5}
     resp = jsonify(data)
     resp.status_code = 200
     return resp
 
-@app.route('/create_private_chat/', methods=['GET'])
+@app.route('/create_private_chat/', methods=['POST'])
 def create_private_chat():
     data = {'name':'new private_chat'}
     resp = jsonify(data)
     resp.status_code = 200
     return resp
 
-@app.route('/create_group_chat/', methods=['GET'])
+@app.route('/create_group_chat/', methods=['POST'])
 def create_group_chat():
     data = {'name': 'new group_chat'}
     resp = jsonify(data)
     resp.status_code = 200
     return resp
 
-@app.route('/add_users_to_chat/', methods=['GET'])
+@app.route('/add_users_to_chat/', methods=['POST'])
 def add_users_to_chat():
     data = {'action':'add user'}
     resp = jsonify(data)
     resp.status_code = 200
     return resp
 
-@app.route('/leave_chat/', methods=['GET'])
+@app.route('/leave_chat/', methods=['POST'])
 def leave_chat():
     data = {'action': 'leave chat'}
     resp = jsonify(data)
     resp.status_code = 200
     return resp
 
-@app.route('/send_message/', methods=['GET'])
+@app.route('/send_message/', methods=['POST'])
 def send_message():
     data = {'action': 'send message'}
     resp = jsonify(data)

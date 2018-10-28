@@ -11,6 +11,7 @@ class AppTest(unittest.TestCase):
 		self.assertEqual(200, rv.status_code)
 		self.assertEqual(b'Hello, world!', rv.data)
 		self.assertEqual("text/html", rv.mimetype)
+		
 # -----------------------------------------------------
 	def test_login(self):
 		rv = self.app.post('/login/', data={"first_name":"Jesse","user_nickname":"Pinkman"})
@@ -18,50 +19,50 @@ class AppTest(unittest.TestCase):
 		self.assertEqual(200, rv.status_code)
 		self.assertEqual("application/json", rv.mimetype)
 
-	# def test_find_user(self):
-	# 	rv = self.app.get('/find_user/', data={"full_name":"Jesse","user_nickname":"Jess"})
-	# 	self.assertEqual(b'{"full_name":"Jesse","user_nickname":"Jess"}\n', rv.data)
-	# 	self.assertEqual(200, rv.status_code)
-	# 	self.assertEqual("application/json", rv.mimetype)
+	def test_find_user(self):
+		rv = self.app.post('/find_user/', data={"full_name":"Jesse","user_nickname":"Jess"})
+		self.assertEqual(b'{"full_name":"Jesse","user_nickname":"Jess"}\n', rv.data)
+		self.assertEqual(200, rv.status_code)
+		self.assertEqual("application/json", rv.mimetype)
 
 	def test_find_chat(self):
-		rv = self.app.get('/find_chat/', data={"chat_name":"chat1","chat_nickname":"chat2"})
+		rv = self.app.post('/find_chat/', data={"chat_name":"chat1","chat_nickname":"chat2"})
 		self.assertEqual(b'{"chat_name":"chat1","chat_nickname":"chat2"}\n', rv.data)
 		self.assertEqual(200, rv.status_code)
 		self.assertEqual("application/json", rv.mimetype)
 
-	def test_get_chats_list(self):
+	def test_get_chats_list_of_user(self):
 		rv = self.app.get('/get_chats_list/')
-		self.assertEqual(b'{"name":"Liliya","nickname":"LL","participant":5}\n', rv.data)
+		self.assertEqual(b'{"chat_num":5,"name":"Liliya","nickname":"LL"}\n', rv.data)
 		self.assertEqual(200, rv.status_code)
 		self.assertEqual("application/json", rv.mimetype)
 
 	def test_create_private_chat(self):
-		rv = self.app.get('/create_private_chat/')
+		rv = self.app.post('/create_private_chat/')
 		self.assertEqual(b'{"name":"new private_chat"}\n', rv.data)
 		self.assertEqual(200, rv.status_code)
 		self.assertEqual("application/json", rv.mimetype)
 
 	def test_create_group_chat(self):
-		rv = self.app.get('/create_group_chat/')
+		rv = self.app.post('/create_group_chat/')
 		self.assertEqual(b'{"name":"new group_chat"}\n', rv.data)
 		self.assertEqual(200, rv.status_code)
 		self.assertEqual("application/json", rv.mimetype)
 
 	def test_add_users_to_chat(self):
-		rv = self.app.get('/add_users_to_chat/')
+		rv = self.app.post('/add_users_to_chat/')
 		self.assertEqual(b'{"action":"add user"}\n', rv.data)
 		self.assertEqual(200, rv.status_code)
 		self.assertEqual("application/json", rv.mimetype)
 
 	def test_leave_chat(self):
-		rv = self.app.get('/leave_chat/')
+		rv = self.app.post('/leave_chat/')
 		self.assertEqual(b'{"action":"leave chat"}\n', rv.data)
 		self.assertEqual(200, rv.status_code)
 		self.assertEqual("application/json", rv.mimetype)
 
 	def test_send_message(self):
-		rv = self.app.get('/send_message/')
+		rv = self.app.post('/send_message/')
 		self.assertEqual(b'{"action":"send message"}\n', rv.data)
 		self.assertEqual(200, rv.status_code)
 		self.assertEqual("application/json", rv.mimetype)
@@ -87,4 +88,5 @@ class AppTest(unittest.TestCase):
 if __name__ == "__main__":
   	unittest.main()
 
+# python3 run.py
 # python -m unittest tests/app_tests.py
