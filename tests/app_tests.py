@@ -34,16 +34,16 @@ class JSONRPCTest (unittest.TestCase):
                           "chats": [
                             {
                               "chat_id": 1, 
-                              "is_group_chat": "false", 
+                              "is_group_chat": False, 
                               "last_message": None, 
-                              "last_read_message_id": None, 
+                              "last_read_message_id": None,
                               "new_messages": 0, 
                               "topic": "dialogkl"
                             }, 
                             {
                               "chat_id": 3, 
-                              "is_group_chat": "false", 
-                              "last_message": "new", 
+                              "is_group_chat": False, 
+                              "last_message": "new_message", 
                               "last_read_message_id": None, 
                               "new_messages": 0, 
                               "topic": "dialogld"
@@ -53,54 +53,54 @@ class JSONRPCTest (unittest.TestCase):
         rv = self.app.post('/api/', data=json.dumps(rpc_query), content_type='application/json')
         self.assertEqual(rpc_expected, json.loads(rv.data))
 
-    # def test_list_messages_by_chat(self):
-    #     rpc_query = {"jsonrpc": "2.0", "method": "list_messages_by_chat", "params": [1, 2], "id": 1}
-    #     rpc_expected = [ {
-    #                         "added_at": "Sun, 28 Oct 2018 16:39:54 GMT", 
-    #                         "chat_id": 1, 
-    #                         "content": "Hello, Kirill!", 
-    #                         "message_id": 2, 
-    #                         "user_id": 1
-    #                       }, 
-    #                       {
-    #                         "added_at": "Sun, 28 Oct 2018 16:39:54 GMT", 
-    #                         "chat_id": 1, 
-    #                         "content": "Hello, Lily!", 
-    #                         "message_id": 3, 
-    #                         "user_id": 2
-    #                       } ]                   
-    #     rv = self.app.post('/api/', data=json.dumps(rpc_query), content_type='application/json')
-    #     self.assertEqual(rpc_expected, json.loads(rv.data))
+    def test_list_messages_by_chat(self):
+        rpc_query = {"jsonrpc": "2.0", "method": "list_messages_by_chat", "params": [1, 2], "id": 1}
+        rpc_expected = [ {
+                            "added_at": "Sun, 28 Oct 2018 16:39:54 GMT", 
+                            "chat_id": 1, 
+                            "content": "Hello, Kirill!", 
+                            "message_id": 2, 
+                            "user_id": 1
+                          }, 
+                          {
+                            "added_at": "Sun, 28 Oct 2018 16:39:54 GMT", 
+                            "chat_id": 1, 
+                            "content": "Hello, Lily!", 
+                            "message_id": 3, 
+                            "user_id": 2
+                          } ]                   
+        rv = self.app.post('/api/', data=json.dumps(rpc_query), content_type='application/json')
+        self.assertEqual(rpc_expected, json.loads(rv.data))
 
-    # def test_create_private_chat(self):
-    #     rpc_query = {"jsonrpc": "2.0", "method": "create_private_chat", "params": [1, 2, "mytopic"], "id": 1}
-    #     rpc_expected = {
-    #                       "id": 1, 
-    #                       "jsonrpc": "2.0", 
-    #                       "result": "null"
-    #                     }
-    #     rv = self.app.post('/api/', data=json.dumps(rpc_query), content_type='application/json')
-    #     self.assertEqual(rpc_expected, json.loads(rv.data))
+    def test_create_private_chat(self):
+        rpc_query = {"jsonrpc": "2.0", "method": "create_private_chat", "params": [1, 2, "mytopic"], "id": 1}
+        rpc_expected = {
+                          "id": 1, 
+                          "jsonrpc": "2.0", 
+                          "result": None
+                        }
+        rv = self.app.post('/api/', data=json.dumps(rpc_query), content_type='application/json')
+        self.assertEqual(rpc_expected, json.loads(rv.data))
 
-    # def test_send_message(self):
-    #     rpc_query = {"jsonrpc": "2.0", "method": "send_message", "params": [1, 3, "new", 1], "id": 1}
-    #     rpc_expected = {
-    #                       "id": 1, 
-    #                       "jsonrpc": "2.0", 
-    #                       "result": None
-    #                     }
-    #     rv = self.app.post('/api/', data=json.dumps(rpc_query), content_type='application/json')
-    #     self.assertEqual(rpc_expected, json.loads(rv.data))
+    def test_send_message(self):
+        rpc_query = {"jsonrpc": "2.0", "method": "send_message", "params": [1, 3, "new_message", 1], "id": 1}
+        rpc_expected = {
+                          "id": 1, 
+                          "jsonrpc": "2.0", 
+                          "result": None
+                        }
+        rv = self.app.post('/api/', data=json.dumps(rpc_query), content_type='application/json')
+        self.assertEqual(rpc_expected, json.loads(rv.data))
 
-    # def test_create_read_message(self):
-    #     rpc_query = {"jsonrpc": "2.0", "method": "read_message", "params": [4, 3, 10], "id": 1}
-    #     rpc_expected = {
-    #                       "id": 1, 
-    #                       "jsonrpc": "2.0", 
-    #                       "result": None
-    #                     }
-    #     rv = self.app.post('/api/', data=json.dumps(rpc_query), content_type='application/json')
-    #     self.assertEqual(rpc_expected, json.loads(rv.data))
+    def test_read_message(self):
+        rpc_query = {"jsonrpc": "2.0", "method": "read_message", "params": [4, 3, 29], "id": 1}
+        rpc_expected = {
+                          "id": 1, 
+                          "jsonrpc": "2.0", 
+                          "result": None
+                        }
+        rv = self.app.post('/api/', data=json.dumps(rpc_query), content_type='application/json')
+        self.assertEqual(rpc_expected, json.loads(rv.data))
 
 
 if __name__ == "__main__":

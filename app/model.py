@@ -1,6 +1,19 @@
 from app import db
 
 
+def autenticate (site, user_info):
+    is_registered = db.query_one("""
+        SELECT user_id
+        FROM USERS
+        WHERE external_id = %(external_id)s
+    """, external_id=site + ':' + user_info['sub'])
+
+    if not is_registered:
+        db.insert("""
+            INSERT INTO users (name, external_id) 
+            VALUES(%(name)s,%(external_id)s)
+        """, name=user_info['given_name'], external_id=site + ':' + user_info['sub']) 
+
 def find_user (name):
     return db.query_all("""
         SELECT user_id, nick, name, avatar
@@ -33,7 +46,10 @@ def create_private_chat (user_id, other_user_id, topic):
         VALUES(false,%(topic)s)
     """, topic=topic)
 
-    chat_id = db.get_cursor().lastrowid
+    chat_id = db.query_one("""
+        SELECT MAX(chat_id) 
+        FROM chats
+    """)
     print (chat_id)
 
     db.insert("""

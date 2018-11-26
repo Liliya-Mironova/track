@@ -18,8 +18,11 @@ def get_cursor():
 def query_one (sql, **params):
     with get_cursor() as cur:
         cur.execute(sql, params)
-        result = dict(cur.fetchone())
-        return result
+        res = cur.fetchone()
+        if res:
+            return dict(res)
+        else:
+            return {}
 
 def query_all (sql, **params):
     with get_cursor() as cur:
@@ -34,7 +37,7 @@ def insert (sql, **params):
     with get_cursor() as cur:
         cur.execute(sql, params)
         conn = flask.g.dbconn
-        conn.commit() # ???
+        conn.commit()
 
 def _rollback_db (sender, exception, **extra):
     if hasattr(flask.g, 'dbconn'):
@@ -48,7 +51,6 @@ def _commit_db (sender, exception, **extra):
         conn = flask.g.dbconn
         conn.commit()
         conn.close()
-
 
 
 # sudo su - postgres
