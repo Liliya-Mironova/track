@@ -7,6 +7,13 @@ CREATE TABLE users (
     avatar TEXT
 );
 
+create table passwords (
+    user_id integer primary key
+    references users(user_id),
+    password TEXT NOT NULL
+    check (length(password) < 32)
+);
+
 create table chats (
     chat_id serial primary key,
     is_group_chat boolean,
