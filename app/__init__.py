@@ -17,6 +17,13 @@ from werkzeug.contrib.cache import MemcachedCache
 # profiler middleware
 from werkzeug.contrib.profiler import ProfilerMiddleware
 
+# ORM
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
+#celery
+from celery import Celery
+
 
 app = Flask(__name__, instance_relative_config=True)
 # jsonrpc = JSONRPC(app, '/api/')
@@ -41,13 +48,25 @@ cache = MemcachedCache(['127.0.0.1:11211'])
 # boto3 (files)
 s3_session = boto3.session.Session()
 s3_client = s3_session.client(
-	service_name='s3',
-	endpoint_url=config.S3_ENDPOINT_URL,
+    service_name='s3',
+    endpoint_url=config.S3_ENDPOINT_URL,
     aws_access_key_id=config.S3_ACCESS_KEY_ID,
     aws_secret_access_key=config.S3_SECRET_ACCESS_KEY)
 
 # authentication
 oauth = OAuth(app)
 
+# ORM
+db = SQLAlchemy(app)
+
+# class Member (db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(80), unique=True, nullable=False)
+#     name = db.Column(db.String(80), unique=True, nullable=False)
+
+#     def __init__(self, username, name = ''):
+#         self.username = username
+
 
 from .views import *
+from .models import *

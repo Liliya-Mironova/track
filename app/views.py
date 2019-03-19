@@ -1,5 +1,5 @@
 from flask import request, jsonify, url_for, redirect, make_response, session
-from app import app, oauth, jsonrpc, model, cent_client
+from app import app, oauth, jsonrpc, model, cent_client, s3_client, db, models
 from instance import config
 import base64
 import time
@@ -12,6 +12,8 @@ from loginpass import create_flask_blueprint, VK, Google
 OAUTH_BACKENDS = [
     Google, VK
 ]
+
+from .models import User, Password, Chat, Message, Attachment
 
 # --------------------------------------------------------------------------------------
 # authentication
@@ -65,6 +67,16 @@ def logout():
 
 # --------------------------------------------------------------------------------------
 # bd methods
+@app.route('/create/<string:id>/<string:name>/<string:nick>')
+def create_user (id, name, nick):
+    users = User(id, name, nick)
+    db.session.add(users)
+    db.session.commit()
+
+    resp = jsonify(users.user_id)
+    resp.status_code = 200
+    return resp
+
 @jsonrpc.method('auth')
 # надо брать токен из сессии и если авторизован, то выполнять
 def auth (login, password):
@@ -98,25 +110,52 @@ def find_user (name):
 
 @jsonrpc.method('find_chat')
 def find_chat (name):
-    print ('find_chat')
-    topics = model.find_chat(name)
+    # topics = model.find_chat(name)
+
+    topics = Chat.query.join('users').filter_by(nick=name).values(topic)
+
+    # SELECT chat_id, is_group_chat, topic, last_message, new_messages, last_read_message_id
+    #     FROM chats
+    #     JOIN members USING (chat_id)
+    #     JOIN users USING (user_id)
+    #     WHERE users.nick=%(nick)s
+
+    print ('here')
     # if session['username'] is not None:
     #     print (session['username'])
     # topics = model.find_chat(session['username'])
     arr = []
     for t in topics:
         arr.append(t)
+    print ('topics:')
+    print (arr)
     resp = jsonify({'chats': arr})
     resp.status_code = 200
     return resp
 
 @jsonrpc.method('create_private_chat')
 def create_private_chat (user_id, other_user_id, topic):
-    model.create_private_chat(user_id, other_user_id, topic)
+    # model.create_private_chat(user_id, other_user_id, topic)
+# https://stackoverflow.com/questions/25668092/flask-sqlalchemy-many-to-many-insert-data
+    p = User(" ", " ", user_id)
+    q = User(" ", " ", other_user_id)
+    c = Chat(False, topic)
+    p.members.append(c)
+    q.members.append(c)
+    db.session.add_all([p,q])
+    db.session.commit()
+
+    # chat = Chat(False, topic)
+    # db.session.add(chat)
+    # db.session.commit()
 
 # https://github.com/centrifugal/cent
 @jsonrpc.method('send_message')
 def send_message (user_id, chat_id, content, attach_id):
+    print (user_id)
+    print (chat_id)
+    print (content)
+    print (attach_id)
     params = {
         "channels": [str(chat_id)],
         "data": {
@@ -128,12 +167,21 @@ def send_message (user_id, chat_id, content, attach_id):
     cent_client.add("broadcast", params)
     cent_client.send()
 
-    model.send_message(user_id, chat_id, content, attach_id)
+    # model.send_message(user_id, chat_id, content, attach_id)
+
+    message = Message(chat_id, user_id, content) # OK
+    upd_chats = db.update(Chat).where(Chat.chat_id==chat_id).values(last_message=content)
+    db.session.add(message)
+    db.session.execute(upd_chats)
+    db.session.commit()
+    # How to insert to members?
+
     return "OK" # what to return???
 
 @jsonrpc.method('read_message')
 def read_message (user_id, chat_id, message_id):
     # а как читать сообщения из центрифуги?
+    # How to insert to members (twice)?
     model.read_message(user_id, chat_id, message_id)
 
 @jsonrpc.method('list_messages_by_chat')
@@ -158,6 +206,12 @@ def get_centrifuge_token (user_id):
 @jsonrpc.method('api.upload_file')
 def upload_file (b64content, filename):
     return b64content
+
+# celery = make_selery(app)
+
+# @celery.task()
+# def add_together(a, b):
+#     return a + b
 
 # @app.route('/news')
 # def test ():

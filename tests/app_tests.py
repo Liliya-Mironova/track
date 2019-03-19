@@ -138,7 +138,7 @@ if __name__ == "__main__":
 # HOWTO launch a check from cmd:
 # curl -i -X POST -H "Content-type: application/json" --data @request.json http://127.0.0.1:5000/
 # rv = self.app.post('/api/', data='{ "jsonrpc": "2.0", "method": "print_name", "params": [], "id": 1 }', \
-# content_type='application/json')
+#   content_type='application/json')
 
 # HOWTO launch datagrip:
 # sh /home/katze/Downloads/DataGrip-2018.2.4/bin/datagrip.sh
@@ -160,6 +160,9 @@ if __name__ == "__main__":
 
 # HOWTO launch centrifuge:
 # /home/katze/Downloads/centrifuge/centrifugo --admin --config=/home/katze/Downloads/centrifuge/config.json
+# localhost:8000
+# password: cde5ef64-9719-423c-99ba-710b1b45f685
+
 
 # HOWTO launch frontend:
 # cd /home/katze/2018-FS-11-Frontend-Mironova/
@@ -167,3 +170,12 @@ if __name__ == "__main__":
 
 # HOWTO lauch backend:
 # python3 /home/katze/back/run.py
+# NOW:
+#/home/katze/back/run.py runserver
+
+
+# git pull --rebase
+# git diff --cached
+# git log -p
+#         --stat
+# git reset

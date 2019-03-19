@@ -67,13 +67,17 @@ def find_user (name):
 
 @memcache
 def find_chat (nick):
-    return db.query_all("""
+    print ('fc')
+    print (nick)
+    res = db.query_all("""
         SELECT chat_id, is_group_chat, topic, last_message, new_messages, last_read_message_id
         FROM chats
         JOIN members USING (chat_id)
         JOIN users USING (user_id)
         WHERE users.nick=%(nick)s
     """, nick=nick)
+    print ('res')
+    return res
 
 # @memcache
 def list_messages_by_chat (chat_id, limit):
@@ -110,6 +114,7 @@ def create_private_chat (user_id, other_user_id, topic):
     """, user_id=int(other_user_id), chat_id=int(chat_id))
 
 def send_message (user_id, chat_id, content, attach_id):
+    print ('here')
     db.insert("""
         INSERT INTO messages (chat_id, user_id, content) 
         VALUES(%(chat_id)s,%(user_id)s,%(content)s)
