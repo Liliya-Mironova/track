@@ -59,14 +59,6 @@ oauth = OAuth(app)
 # ORM
 db = SQLAlchemy(app)
 
-# class Member (db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(80), unique=True, nullable=False)
-#     name = db.Column(db.String(80), unique=True, nullable=False)
-
-#     def __init__(self, username, name = ''):
-#         self.username = username
-
 
 from .views import *
 from .models import *

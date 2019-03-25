@@ -1,0 +1,37 @@
+PATH: '/'
+         1990 function calls (1912 primitive calls) in 0.249 seconds
+
+   Ordered by: internal time, call count
+   List reduced from 440 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.189    0.189    0.189    0.189 {built-in method psycopg2._psycopg._connect}
+        1    0.049    0.049    0.049    0.049 {function DictCursor.execute at 0x7fa565fc5598}
+        2    0.002    0.001    0.002    0.001 {method 'recv' of '_socket.socket' objects}
+        1    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/flask/ctx.py:428(auto_pop)
+       49    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/werkzeug/local.py:160(top)
+        4    0.000    0.000    0.000    0.000 {built-in method builtins.__build_class__}
+        1    0.000    0.000    0.000    0.000 {built-in method marshal.loads}
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:914(get_data)
+   121/65    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/json/encoder.py:333(_iterencode_dict)
+      178    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
+        3    0.000    0.000    0.000    0.000 {built-in method builtins.print}
+       53    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/werkzeug/local.py:68(__getattr__)
+       43    0.000    0.000    0.001    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/werkzeug/local.py:300(_get_current_object)
+    72/62    0.000    0.000    0.002    0.000 {built-in method builtins.getattr}
+        2    0.000    0.000    0.000    0.000 {method 'sendall' of '_socket.socket' objects}
+        1    0.000    0.000    0.000    0.000 {method 'connect' of '_socket.socket' objects}
+    62/61    0.000    0.000    0.000    0.000 {built-in method builtins.hasattr}
+        1    0.000    0.000    0.245    0.245 /home/katze/anaconda3/lib/python3.7/site-packages/flask_jsonrpc/__init__.py:162(wrapper)
+        2    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/flask/json/__init__.py:92(_dump_arg_defaults)
+    33/31    0.000    0.000    0.002    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/werkzeug/local.py:344(__getattr__)
+        1    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/werkzeug/wrappers.py:830(__init__)
+        3    0.000    0.000    0.000    0.000 {built-in method posix.stat}
+        1    0.000    0.000    0.001    0.001 /home/katze/anaconda3/lib/python3.7/site-packages/flask/json/__init__.py:257(jsonify)
+        5    0.000    0.000    0.001    0.000 /home/katze/anaconda3/lib/python3.7/re.py:271(_compile)
+        1    0.000    0.000    0.238    0.238 /home/katze/back/app/db.py:27(query_all)
+        2    0.000    0.000    0.001    0.000 /home/katze/anaconda3/lib/python3.7/json/encoder.py:182(encode)
+        1    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/werkzeug/routing.py:1261(bind_to_environ)
+        1    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/flask/debughelpers.py:10(<module>)
+        1    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/encodings/__init__.py:71(search_function)
+        1    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/werkzeug/routing.py:1443(match)

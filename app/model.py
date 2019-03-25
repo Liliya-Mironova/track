@@ -30,14 +30,12 @@ def check_user (login):
         return None
 
 def check_password (user_id, password): # where to save passwords?
-    print ('check_password')
     is_valid = db.query_one("""
         SELECT password_id
         FROM passwords
         WHERE user_id=%(user_id)s and password_hash = %(password)s
     """, user_id=user_id, password=password)
 
-    print (is_valid)
     if is_valid:
         return True
     return False

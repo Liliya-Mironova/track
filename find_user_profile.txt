@@ -1,0 +1,38 @@
+PATH: '/'
+         1481 function calls (1449 primitive calls) in 0.028 seconds
+
+   Ordered by: internal time, call count
+   List reduced from 312 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.015    0.015    0.015    0.015 {built-in method psycopg2._psycopg._connect}
+        1    0.004    0.004    0.004    0.004 {function DictCursor.execute at 0x7fa565fc5598}
+       49    0.000    0.000    0.001    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/werkzeug/local.py:160(top)
+        2    0.000    0.000    0.001    0.001 /home/katze/anaconda3/lib/python3.7/site-packages/memcache.py:422(_get_server)
+        1    0.000    0.000    0.001    0.001 /home/katze/anaconda3/lib/python3.7/site-packages/flask/ctx.py:428(auto_pop)
+       53    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/werkzeug/local.py:68(__getattr__)
+       43    0.000    0.000    0.001    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/werkzeug/local.py:300(_get_current_object)
+    67/63    0.000    0.000    0.001    0.000 {built-in method builtins.getattr}
+        8    0.000    0.000    0.000    0.000 {method 'sub' of 're.Pattern' objects}
+    49/29    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/json/encoder.py:333(_iterencode_dict)
+      136    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
+        1    0.000    0.000    0.000    0.000 {method 'connect' of '_socket.socket' objects}
+    33/31    0.000    0.000    0.002    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/werkzeug/local.py:344(__getattr__)
+        2    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/flask/json/__init__.py:92(_dump_arg_defaults)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.__build_class__}
+        2    0.000    0.000    0.000    0.000 {built-in method builtins.print}
+       20    0.000    0.000    0.001    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/memcache.py:1380(connect)
+       22    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/memcache.py:68(cmemcache_hash)
+        2    0.000    0.000    0.001    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/psycopg2/extensions.py:148(make_dsn)
+       20    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/memcache.py:1392(_get_socket)
+    53/52    0.000    0.000    0.000    0.000 {built-in method builtins.hasattr}
+        2    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/psycopg2/extensions.py:173(<listcomp>)
+       21    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/flask/globals.py:48(_find_app)
+       19    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/flask/globals.py:34(_lookup_req_object)
+     11/6    0.000    0.000    0.001    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/werkzeug/utils.py:68(__get__)
+        1    0.000    0.000    0.001    0.001 /home/katze/anaconda3/lib/python3.7/site-packages/flask/json/__init__.py:257(jsonify)
+        1    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/socket.py:162(__repr__)
+       20    0.000    0.000    0.000    0.000 /home/katze/anaconda3/lib/python3.7/site-packages/memcache.py:1374(_check_dead)
+       12    0.000    0.000    0.000    0.000 {method 'match' of 're.Pattern' objects}
+        1    0.000    0.000    0.020    0.020 /home/katze/back/app/db.py:27(query_all)
+

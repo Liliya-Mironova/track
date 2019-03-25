@@ -4,6 +4,7 @@ from instance import config
 import base64
 import time
 import jwt
+import json
 
 # authentication
 from authlib.flask.client import OAuth
@@ -15,6 +16,11 @@ OAUTH_BACKENDS = [
 
 from .models import User, Password, Chat, Message, Attachment
 
+# forms validation (wftorms)
+from .wtforms import UserForm
+import requests
+from werkzeug.datastructures import ImmutableMultiDict
+
 # --------------------------------------------------------------------------------------
 # authentication
 @app.route('/')
@@ -23,9 +29,18 @@ def index():
     lis = [tpl.format(b.OAUTH_NAME, b.OAUTH_NAME) for b in OAUTH_BACKENDS]
     return '<ul>{}</ul>'.format(''.join(lis))
 
-def handle_authorize_vk (remote, token, user_info):
-    model.autenticate('vk', user_info)
+def handle_authorize_vk (remote, token, user_info): # works!
+    #model.autenticate('vk', user_info)
+    site = 'vk'
     session['username'] = user_info['given_name']
+
+    is_registered = User.query.filter(User.external_id == site + ':' + user_info['sub']).all()
+    print (is_registered)
+    if len(is_registered) == 0:
+        users = User(None, user_info['given_name'], user_info['given_name'], site + ':' + user_info['sub'])
+        db.session.add(users)
+        db.session.commit()
+
     # inf = jsonify({'token': token})
     # response = app.response_class(
     #     response = inf,
@@ -44,8 +59,19 @@ def handle_authorize_vk (remote, token, user_info):
     return jsonify(token)
 
 # TODO
-def handle_authorize_google (remote, token, user_info):
-    model.autenticate('google', user_info)
+def handle_authorize_google (remote, token, user_info): # works!
+    #model.autenticate('google', user_info)
+
+    site = 'google'
+    session['username'] = user_info['given_name']
+
+    is_registered = User.query.filter(User.external_id == site + ':' + user_info['sub']).all()
+    print (is_registered)
+    if len(is_registered) == 0:
+        users = User(None, user_info['given_name'], user_info['given_name'], site + ':' + user_info['sub'])
+        db.session.add(users)
+        db.session.commit()
+
     resp = jsonify({'token': token})
     resp.status_code = 200
     return resp
@@ -68,7 +94,7 @@ def logout():
 # --------------------------------------------------------------------------------------
 # bd methods
 @app.route('/create/<string:id>/<string:name>/<string:nick>')
-def create_user (id, name, nick):
+def create_user (id, name, nick): # only demo, works!
     users = User(id, name, nick)
     db.session.add(users)
     db.session.commit()
@@ -77,85 +103,99 @@ def create_user (id, name, nick):
     resp.status_code = 200
     return resp
 
+@app.route('/auth1', methods=['GET'])
+def auth1 (): # only demo, works!
+    #user_id = model.check_user(login)
+
+    print (request.args) # ImmutableMultiDict([('login', 'lmironov'), ('password', '11')])
+    form = UserForm(request.args)
+    print (form.data) # {'login': 'lmironov', 'password': '11'}
+    if form.validate():
+        print ('val')
+    return "OK"
+    #     form.populate_obj(user)
+    #     User.query.all()
+
 @jsonrpc.method('auth')
-# надо брать токен из сессии и если авторизован, то выполнять
-def auth (login, password):
-    user_id = model.check_user(login)
-    if user_id:
-        is_valid = model.check_password(user_id, password)
-        if is_valid:
-            session['username'] = login
-            print (session['username'])
-            token = jwt.encode({"sub": "0"}, config.VK_CLIENT_SECRET, algorithm='HS256').decode()
-            resp = jsonify({"token": token})
-            resp.status_code = 200
+def auth (login, password): # works!
+    #user_id = model.check_user(login)
+
+    params = json.loads(request.data)['params'] # sooo hardcode because of jsonrpc
+    form = UserForm(ImmutableMultiDict([('login', params[0]), ('password',params[1])]))
+    if form.validate():
+        user_info = User.query.filter(User.nick == login).all()
+        if len(user_info):
+            user_id = user_info[0].user_id
         else:
-            resp = jsonify({"Error": "Invalid password"}) # or what?
+            user_id = None
+
+        if user_id:
+            #is_valid = model.check_password(user_id, password)
+            is_valid = Password.query.filter(Password.user_id == user_id, Password.password_hash == password).all()
+
+            if len(is_valid):
+                session['username'] = login
+                print (session['username'])
+                token = jwt.encode({"sub": "0"}, config.VK_CLIENT_SECRET, algorithm='HS256').decode()
+                resp = jsonify({"token": token})
+                resp.status_code = 200
+            else:
+                resp = jsonify({"Error": "Invalid password"}) # or what?
+                resp.status_code = 404 # or what?
+        else:
+            resp = jsonify({"Error": "Unregistered"}) # or what?
             resp.status_code = 404 # or what?
     else:
-        resp = jsonify({"Error": "Unregistered"}) # or what?
+        resp = jsonify({"Error": "Invalid values"}) # or what?
         resp.status_code = 404 # or what?
+    print (resp.data)
     return resp
 
 @jsonrpc.method('find_user')
-# надо брать токен из сессии и если авторизован, то выполнять
-def find_user (name):
-    user_names = model.find_user(name)
+def find_user (nick): # works!
+    # user_names = model.find_user(name)
+
+    users = User.query.filter_by(nick=nick).all()
     arr = []
-    for u in user_names:
-        arr.append(u)
+    for u in users:
+        arr.append(u.name)
+
     resp = jsonify({'users': arr})
     resp.status_code = 200
     return resp
 
 @jsonrpc.method('find_chat')
-def find_chat (name):
-    # topics = model.find_chat(name)
-
-    topics = Chat.query.join('users').filter_by(nick=name).values(topic)
-
-    # SELECT chat_id, is_group_chat, topic, last_message, new_messages, last_read_message_id
-    #     FROM chats
-    #     JOIN members USING (chat_id)
-    #     JOIN users USING (user_id)
-    #     WHERE users.nick=%(nick)s
-
-    print ('here')
+def find_chat (nick): # works!
     # if session['username'] is not None:
     #     print (session['username'])
-    # topics = model.find_chat(session['username'])
+    # topics = model.find_chat(name)
+
+    topics = Chat.query.join('members').filter_by(nick=nick).values('topic')
     arr = []
     for t in topics:
-        arr.append(t)
-    print ('topics:')
-    print (arr)
+        arr.append(t[0])
     resp = jsonify({'chats': arr})
+
     resp.status_code = 200
     return resp
 
 @jsonrpc.method('create_private_chat')
-def create_private_chat (user_id, other_user_id, topic):
+def create_private_chat (user_id, other_user_id, topic): # works!
     # model.create_private_chat(user_id, other_user_id, topic)
-# https://stackoverflow.com/questions/25668092/flask-sqlalchemy-many-to-many-insert-data
-    p = User(" ", " ", user_id)
-    q = User(" ", " ", other_user_id)
-    c = Chat(False, topic)
-    p.members.append(c)
-    q.members.append(c)
-    db.session.add_all([p,q])
-    db.session.commit()
 
-    # chat = Chat(False, topic)
-    # db.session.add(chat)
-    # db.session.commit()
+    chat = Chat(is_group_chat=False, topic=topic)
+
+    user1 = User.query.filter(User.user_id == user_id).one()
+    user2 = User.query.filter(User.user_id == other_user_id).one()
+    chat.members = [user1, user2]
+
+    db.session.add(chat)
+    db.session.commit()
 
 # https://github.com/centrifugal/cent
 @jsonrpc.method('send_message')
-def send_message (user_id, chat_id, content, attach_id):
-    print (user_id)
-    print (chat_id)
-    print (content)
-    print (attach_id)
+def send_message (user_id, chat_id, content, attach_id): # works!
+    # TODO: validate chat_id
     params = {
         "channels": [str(chat_id)],
         "data": {
@@ -169,29 +209,46 @@ def send_message (user_id, chat_id, content, attach_id):
 
     # model.send_message(user_id, chat_id, content, attach_id)
 
-    message = Message(chat_id, user_id, content) # OK
-    upd_chats = db.update(Chat).where(Chat.chat_id==chat_id).values(last_message=content)
+    message = Message(chat_id, user_id, content)
     db.session.add(message)
-    db.session.execute(upd_chats)
+    db.session.query(Chat).filter(Chat.chat_id==chat_id).update({'last_message': content})
     db.session.commit()
-    # How to insert to members?
 
-    return "OK" # what to return???
+    resp = jsonify({'sent': 'yes'})
+    resp.status_code = 200
+    return resp
 
-@jsonrpc.method('read_message')
+@jsonrpc.method('read_message') # ?
 def read_message (user_id, chat_id, message_id):
-    # а как читать сообщения из центрифуги?
-    # How to insert to members (twice)?
-    model.read_message(user_id, chat_id, message_id)
+    #model.read_message(user_id, chat_id, message_id)
+
+    last_read_message_id = Chat.query.all()
+    print (last_read_message_id[0])
+    #db.session.query(Chat).filter(Chat.chat_id==chat_id).update(members: {last_read_message_id: message_id, new_messages: })
+    #chat.members = [user1, user2]
+
+    # db.insert("""
+    #     UPDATE members
+    #     SET last_read_message_id = %(message_id)s
+    #     WHERE chat_id = %(chat_id)s AND user_id = %(user_id)s
+    # """, chat_id=int(chat_id), user_id=int(user_id), message_id=int(message_id))
+
+    # db.insert("""
+    #     UPDATE members
+    #     SET new_messages = new_messages - 1
+    #     WHERE chat_id = %(chat_id)s AND user_id = %(user_id)s
+    # """, chat_id=int(chat_id), user_id=int(user_id), message_id=int(message_id))
 
 @jsonrpc.method('list_messages_by_chat')
-def list_messages_by_chat (chat_id, limit):
-    messages = model.list_messages_by_chat(chat_id, limit)
-    # arr = []
-    # for m in messages:
-    #   arr.append(m['content'])
-    # resp = jsonify({'messages': arr})
-    resp = jsonify(messages)
+def list_messages_by_chat (chat_id, limit): # works!
+    #messages = model.list_messages_by_chat(chat_id, limit)
+
+    messages = Message.query.filter(Message.chat_id == chat_id).order_by(Message.added_at.desc()).limit(limit).all()
+    arr = []
+    for m in messages:
+        arr.append(m.content)
+
+    resp = jsonify({'messages': arr})
     resp.status_code = 200
     return resp
 

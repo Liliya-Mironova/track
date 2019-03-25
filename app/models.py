@@ -15,19 +15,17 @@ class User (db.Model):
     name = db.Column(db.String(80), nullable=False)
     nick = db.Column(db.String(80), unique=True, nullable=False)
     avatar = db.Column(db.String(80))
-    external_id = db.Column(db.Integer)
+    external_id = db.Column(db.String(80))
 
-    attachments = db.relationship('Attachment', backref='user', lazy='dynamic',
-        primaryjoin="User.user_id==Attachment.user_id")
-    passwords = db.relationship('Password', uselist=False, backref='user',
-        primaryjoin="User.user_id==Password.user_id")
+    attachments = db.relationship('Attachment', backref='users', lazy=True)
+    passwords = db.relationship('Password', uselist=False, backref='users', lazy=True)
 
-    members = db.relationship('Chat', secondary=members, lazy='subquery',
-                backref=db.backref('pages', lazy=True))
-
-    def __init__(self, name, nick, user_id):
+    # def __init__(**kwargs):
+    #     super(User, self).__init__(**kwargs)
+    def __init__(self, user_id, name, nick, external_id):
         self.name = name
         self.nick = nick
+        self.external_id = external_id
         if user_id is not None:
             self.user_id = user_id
 
@@ -48,8 +46,10 @@ class Chat (db.Model):
     topic = db.Column(db.String(80), nullable=False)
     last_message = db.Column(db.String(80))
 
-    messages = db.relationship('Message', backref='chat')
-    attachments = db.relationship('Attachment', backref='chat')
+    messages = db.relationship('Message', backref='chat', lazy=True)
+    attachments = db.relationship('Attachment', backref='chat', lazy=True)
+    members = db.relationship('User', secondary=members, lazy='subquery',
+                backref=db.backref('members', lazy=True))
 
     def __init__(self, is_group_chat, topic):
         self.is_group_chat = is_group_chat
@@ -63,8 +63,8 @@ class Message (db.Model):
     content = db.Column(db.String(80), nullable=False)
     added_at = db.Column(db.DateTime, nullable=False)
 
-    attachments = db.relationship('Attachment', backref='message')
-    # members = db.relationship('members', backref='message') # ???
+    attachments = db.relationship('Attachment', backref='message', lazy=True)
+    #members = db.relationship('members', backref='message', lazy=True)
 
     def __init__(self, chat_id, user_id, content):
         self.chat_id = chat_id

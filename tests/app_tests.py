@@ -179,3 +179,11 @@ if __name__ == "__main__":
 # git log -p
 #         --stat
 # git reset
+
+
+# ./run.py db --help
+# ./run.py db init
+# ./run.py db migrate
+
+# ./run.py db stamp head
+# ./run.py db stamp migrate
