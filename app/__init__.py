@@ -21,8 +21,11 @@ from werkzeug.contrib.profiler import ProfilerMiddleware
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-#celery
-from celery import Celery
+# celery
+from .flask_celery import make_celery
+
+# mail
+from flask_mail import Mail
 
 
 app = Flask(__name__, instance_relative_config=True)
@@ -34,6 +37,9 @@ jsonrpc = JSONRPC(app, '/')
 # config
 app.config.from_pyfile('config.py') # default config
 app.config.from_pyfile('config.py', silent=True) # local config
+
+# mail
+mail =  Mail(app)
 
 # centrifugo (messages)
 cent_client = Client(config.CENTRIFUGO_URL, api_key=config.CENTRIFUGO_API_KEY, timeout=1)
@@ -58,6 +64,18 @@ oauth = OAuth(app)
 
 # ORM
 db = SQLAlchemy(app)
+
+# celery
+celery = make_celery(app)
+
+from flask_mail import Message
+
+@app.route("/msg")
+def msg():
+
+    msg = Message("Hello",
+                  sender="from@example.com",
+                  recipients=["to@example.com"])
 
 
 from .views import *

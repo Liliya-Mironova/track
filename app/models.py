@@ -25,7 +25,8 @@ class User (db.Model):
     def __init__(self, user_id, name, nick, external_id):
         self.name = name
         self.nick = nick
-        self.external_id = external_id
+        if external_id is not None:
+            self.external_id = external_id
         if user_id is not None:
             self.user_id = user_id
 

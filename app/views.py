@@ -1,10 +1,12 @@
 from flask import request, jsonify, url_for, redirect, make_response, session
-from app import app, oauth, jsonrpc, model, cent_client, s3_client, db, models
+from app import app, oauth, jsonrpc, model, cent_client, s3_client, db, models, celery, mail
 from instance import config
 import base64
 import time
 import jwt
 import json
+
+from flask_mail import Message
 
 # authentication
 from authlib.flask.client import OAuth
@@ -93,13 +95,24 @@ def logout():
 
 # --------------------------------------------------------------------------------------
 # bd methods
-@app.route('/create/<string:id>/<string:name>/<string:nick>')
-def create_user (id, name, nick): # only demo, works!
-    users = User(id, name, nick)
+@app.route('/create/<string:name>/<string:nick>')
+def create_user (name, nick): # only demo, works!
+    users = User(None, name, nick, None)
     db.session.add(users)
     db.session.commit()
 
     resp = jsonify(users.user_id)
+    resp.status_code = 200
+    return resp
+
+@app.route('/view_user/<string:nick>')
+def view_user(nick):
+    users = User.query.filter_by(nick=nick).all()
+    arr = []
+    for u in users:
+        arr.append(u.name)
+
+    resp = jsonify({'users': arr})
     resp.status_code = 200
     return resp
 
@@ -264,11 +277,63 @@ def get_centrifuge_token (user_id):
 def upload_file (b64content, filename):
     return b64content
 
-# celery = make_selery(app)
+# --------------------------------------------------------------------------------------
+# celery
+@celery.task() # now celery sees this function
+def add_together (a, b):
+    return a + b
 
-# @celery.task()
-# def add_together(a, b):
-#     return a + b
+# @app.route('/send_mail/')
+# def send_mail():
+#     msg = Message(
+#             'Hello',
+#             sender='mironowa.lilija@gmail.com',
+#             recipients=
+#                ['mironowa.lilija@gmail.com'])
+#     msg.body = "This is the email body"
+#     mail.send(msg)
+#     return "Sent"
+
+@app.route('/send')
+def send_email():
+    #subject, sender, recipients, text_body, html_body
+    msg = Message('subject', sender=app.config['ADMINS'][0], recipients=["theflower86@mail.ru"])
+    msg.body = "msg"
+    msg.html = "<p>msg))</p>"
+    with app.app_context():
+        mail.send(msg)
+    return "OK"
+
+#@celery.task(soft_time_limit=3, time_limit=10)
+# @app.route('/send')
+# def send_email_ ():
+#     print (app.config['ADMINS'][0])
+#     message = Message('HW', sender=app.config['ADMINS'][0], recipients=['mironova.liliya@gmail.com'])
+#     message.html = '<b>testing</b>';
+
+#     with app.app_context():
+#         mail.send(message)
+#     return "OK"
+
+
+# celery:
+# redis-server /etc/redis/redis.conf
+# celery -A app.celery worker --loglevel INFO
+# ipython
+#   from app import add_together
+#   add_together(12, 13)
+#   -> 25
+#   add_together.delay(2, 3)
+#   -> <AsyncResult: e374714f-023a-4fce-8ebe-57b0fcac9e43>
+#   result = add_together.apply_async((2, 3), coundown=10)
+#   result.status
+#   -> 'PENDING'
+#   result.status
+#   -> 'SUCCESS'
+#   result.get()
+#   -> 5
+
+
 
 # @app.route('/news')
 # def test ():
