@@ -47,7 +47,7 @@ class Chat (db.Model):
     topic = db.Column(db.String(80), nullable=False)
     last_message = db.Column(db.String(80))
 
-    messages = db.relationship('Message', backref='chat', lazy=True)
+    messages = db.relationship('Messages', backref='chat', lazy=True)
     attachments = db.relationship('Attachment', backref='chat', lazy=True)
     members = db.relationship('User', secondary=members, lazy='subquery',
                 backref=db.backref('members', lazy=True))
@@ -56,7 +56,7 @@ class Chat (db.Model):
         self.is_group_chat = is_group_chat
         self.topic = topic
 
-class Message (db.Model):
+class Messages (db.Model):
     __tablename__ = 'messages'
     message_id = db.Column(db.Integer, primary_key=True)
     chat_id = db.Column(db.Integer, db.ForeignKey('chats.chat_id'))

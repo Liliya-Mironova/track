@@ -27,6 +27,9 @@ from .flask_celery import make_celery
 # mail
 from flask_mail import Mail
 
+# Elasticsearch
+from elasticsearch import Elasticsearch
+
 
 app = Flask(__name__, instance_relative_config=True)
 # jsonrpc = JSONRPC(app, '/api/')
@@ -38,15 +41,12 @@ jsonrpc = JSONRPC(app, '/')
 app.config.from_pyfile('config.py') # default config
 app.config.from_pyfile('config.py', silent=True) # local config
 
-# mail
-mail =  Mail(app)
-
 # centrifugo (messages)
 cent_client = Client(config.CENTRIFUGO_URL, api_key=config.CENTRIFUGO_API_KEY, timeout=1)
 
 # memcache
 # sudo service memcached restart
-cache = MemcachedCache(['127.0.0.1:11211'])
+cache = MemcachedCache([config.MEMCACHE_URL])
 
 # profiler middleware
 # app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[30])
@@ -68,14 +68,11 @@ db = SQLAlchemy(app)
 # celery
 celery = make_celery(app)
 
-from flask_mail import Message
+# Elasticsearch
+es = Elasticsearch(config.ELASTICSEARCH_URL)
 
-@app.route("/msg")
-def msg():
-
-    msg = Message("Hello",
-                  sender="from@example.com",
-                  recipients=["to@example.com"])
+# mail
+mail =  Mail(app)
 
 
 from .views import *

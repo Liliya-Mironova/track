@@ -1,4 +1,4 @@
-#! /home/katze/anaconda3/bin/python3
+#! /home/katze/back/venv/bin/python3
 from app import app, db
 
 from flask_script import Manager

@@ -16,7 +16,7 @@ OAUTH_BACKENDS = [
     Google, VK
 ]
 
-from .models import User, Password, Chat, Message, Attachment
+from .models import User, Password, Chat, Messages, Attachment
 
 # forms validation (wftorms)
 from .wtforms import UserForm
@@ -222,7 +222,7 @@ def send_message (user_id, chat_id, content, attach_id): # works!
 
     # model.send_message(user_id, chat_id, content, attach_id)
 
-    message = Message(chat_id, user_id, content)
+    message = Messages(chat_id, user_id, content)
     db.session.add(message)
     db.session.query(Chat).filter(Chat.chat_id==chat_id).update({'last_message': content})
     db.session.commit()
@@ -256,7 +256,7 @@ def read_message (user_id, chat_id, message_id):
 def list_messages_by_chat (chat_id, limit): # works!
     #messages = model.list_messages_by_chat(chat_id, limit)
 
-    messages = Message.query.filter(Message.chat_id == chat_id).order_by(Message.added_at.desc()).limit(limit).all()
+    messages = Messages.query.filter(Messages.chat_id == chat_id).order_by(Messages.added_at.desc()).limit(limit).all()
     arr = []
     for m in messages:
         arr.append(m.content)
@@ -297,7 +297,8 @@ def add_together (a, b):
 @app.route('/send')
 def send_email():
     #subject, sender, recipients, text_body, html_body
-    msg = Message('subject', sender=app.config['ADMINS'][0], recipients=["theflower86@mail.ru"])
+    print (app.config['ADMINS'][0])
+    msg = Message("subject", sender=app.config['ADMINS'][0], recipients=["mironova.lr@phystech.edu"])
     msg.body = "msg"
     msg.html = "<p>msg))</p>"
     with app.app_context():
@@ -344,3 +345,19 @@ def send_email():
 
 # python3 run.py
 # https://console.developers.google.com/apis/credentials/oauthclient/376891051682-qovomi5amba9t7tpt477acr55cpfm8go.apps.googleusercontent.com?project=messenger-223008
+
+def index_instance (obj, index='index', doc_type='default'):
+    es.index(
+        index=index,
+        doc_type=default,
+        body=serialize_indexable(obj)
+    )
+
+def search_in_index(text, index='index', doc_type='default'):
+    es.search(
+        index=index,
+        doc_type=default,
+        body={
+            'query': {'match': {'text': text}}
+        }
+    )
